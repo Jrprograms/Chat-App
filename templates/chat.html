@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        /*Main style*/
+        html {
+            height: 100%;
+        }
+
+        .container {
+            display: flex;
+        }
+
+
+
+
+
+        /*Mobile*/
+        @media(max-width:600px) {
+            body {
+                height: 100%;
+                margin: 0;
+                display: flex;
+                justify-content:space-between;
+                flex-direction: column;
+                background-color: rgb(124, 35, 165);
+            }
+            header {
+                height: 8.5vh;
+                background-color: rgba(68, 68, 68, 0.836);
+                display: flex;
+                flex-direction: row;
+                align-items: center;
+                justify-content: space-between;
+                border-bottom: 2.5px solid black;
+            }
+            .header-button{
+                background-color: transparent;
+                color: white;
+                border: none;
+            }
+            #corpo{
+                justify-content: flex-end;
+            }
+            .chat {
+                display: flex;
+                font-family: Verdana, Geneva, Tahoma, sans-serif;
+                height: 165vw;
+                flex-direction: column;
+            }
+
+            .input {
+                display: flex;
+                justify-content: space-between;
+                margin-bottom: 3.5px;
+            }
+            #message-input {
+                height: 30px;
+                width: 80vw;
+                padding-left: 5px;
+                background-color: transparent;
+                color: white;
+                border: black 2px solid;
+                outline: none;
+            }
+            .message{
+                padding: 5px;
+                width: fit-content;
+                color: aliceblue;
+                background-color: rgba(68, 68, 68, 0.836);
+            }
+            button#send {
+                margin-right: 4.5px;
+                background-color: transparent;
+                border: black 2px solid;
+            }
+        }
+    </style>
+    <title>Chat</title>
+</head>
+
+<body>
+    <header>
+        <button class="header-button" id="voltar" style="font-size: 20px;margin-right: 7.5px;"> &larr;</button>
+        <div>
+            Perfil do recptor
+        </div>
+    </header>
+    <div class="corpo">
+        <div class="chat">
+        </div>
+
+        <form class="input">
+            <input type="text" placeholder="Mensagem" id="message-input">
+            <button type="submit" id="send">Enviar</button>
+        </form>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.4.1/socket.io.js"></script>
+    <script>
+        //Conect socket
+        const socket = io('http://127.0.0.1:5000/');
+        window.onload = () => {
+
+            socket.on('connect', () => {
+                socket.send('Usuário conectado ao server');
+            })
+        }
+
+        //send message
+        document.querySelector('form').addEventListener('submit', (event) => {
+            event.preventDefault();
+
+            let message = event.target[0].value;
+            socket.emit('sendMessage', { name, message });
+            message = ''
+            document.querySelector('#message-input').value = ""
+        })
+
+        //received message
+        socket.on('getMessage', (msg) => {
+            const span = document.createElement('span');
+            span.classList.add('message')
+            const chat = document.querySelector('.chat');
+            const hour = new Date()
+            hour.getHours()
+            span.innerHTML = `<strong>${msg.name}</strong>: ${msg.message}`;
+            chat.append(span);
+        })
+    </script>
+
+</body>
+
+</html>
